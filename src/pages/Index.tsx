@@ -6,7 +6,7 @@ import ResultsDisplay from '@/components/ResultsDisplay';
 import { analyzeImage, formatPredictions } from '@/services/roboflowService';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ExternalLink, Key } from 'lucide-react';
+import { ArrowRight, ExternalLink, Key, Database } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 const Index = () => {
@@ -15,14 +15,18 @@ const Index = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [predictions, setPredictions] = useState<any[] | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Roboflow settings
   const [apiKey, setApiKey] = useState('');
+  const [modelId, setModelId] = useState('');
+  const [modelVersion, setModelVersion] = useState('');
   
   const handleImageSelect = async (file: File, previewUrl: string) => {
     setSelectedImage(file);
     setImagePreview(previewUrl);
     setPredictions(null);
     
-    // Validate API key is present
+    // Validate required fields
     if (!apiKey.trim()) {
       toast({
         title: "API Key Required",
@@ -32,9 +36,18 @@ const Index = () => {
       return;
     }
     
+    if (!modelId.trim() || !modelVersion.trim()) {
+      toast({
+        title: "Model Configuration Required",
+        description: "Please enter your Roboflow model ID and version before analyzing images.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       setIsProcessing(true);
-      const results = await analyzeImage(file, apiKey.trim());
+      const results = await analyzeImage(file, apiKey.trim(), modelId.trim(), modelVersion.trim());
       setPredictions(formatPredictions(results));
       toast({
         title: "Analysis complete!",
@@ -44,7 +57,7 @@ const Index = () => {
       console.error('Error analyzing image:', error);
       toast({
         title: "Analysis failed",
-        description: "There was an error processing your image. Please check your API key and try again.",
+        description: "There was an error processing your image. Please check your API key and model settings and try again.",
         variant: "destructive"
       });
       setPredictions([]);
@@ -92,13 +105,16 @@ const Index = () => {
           <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6 md:p-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">Upload Your Image</h2>
             
-            {/* API Key Input */}
+            {/* API Configuration */}
             <div className="mb-6 border-b pb-6">
-              <label htmlFor="api-key" className="block text-sm font-medium text-gray-700 mb-2">
-                Roboflow API Key
-              </label>
-              <div className="flex gap-2">
-                <div className="relative flex-grow">
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Roboflow Configuration</h3>
+              
+              {/* API Key Input */}
+              <div className="mb-4">
+                <label htmlFor="api-key" className="block text-sm font-medium text-gray-700 mb-2">
+                  API Key
+                </label>
+                <div className="relative">
                   <Input
                     id="api-key"
                     type="password"
@@ -109,16 +125,51 @@ const Index = () => {
                   />
                   <Key className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => window.open('https://docs.roboflow.com/api-reference/authentication', '_blank')}
-                >
-                  Get API Key
-                </Button>
               </div>
+              
+              {/* Model ID and Version */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="model-id" className="block text-sm font-medium text-gray-700 mb-2">
+                    Model ID
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="model-id"
+                      type="text"
+                      placeholder="Enter your model ID"
+                      value={modelId}
+                      onChange={(e) => setModelId(e.target.value)}
+                      className="pl-10"
+                    />
+                    <Database className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="model-version" className="block text-sm font-medium text-gray-700 mb-2">
+                    Model Version
+                  </label>
+                  <Input
+                    id="model-version"
+                    type="text"
+                    placeholder="Enter your model version"
+                    value={modelVersion}
+                    onChange={(e) => setModelVersion(e.target.value)}
+                  />
+                </div>
+              </div>
+              
               <p className="mt-2 text-xs text-gray-500">
-                Your API key is required to access the Roboflow model. It will not be stored on our servers.
+                Find your model ID and version in your Roboflow dashboard. Your API key is required to access the model.
               </p>
+              
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => window.open('https://docs.roboflow.com/api-reference/authentication', '_blank')}
+              >
+                Get Roboflow API Key <ExternalLink className="h-4 w-4 ml-2" />
+              </Button>
             </div>
             
             <ImageUpload onImageSelect={handleImageSelect} isProcessing={isProcessing} />

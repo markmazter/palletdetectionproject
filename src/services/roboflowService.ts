@@ -13,7 +13,9 @@ interface PredictionResponse {
 
 export const analyzeImage = async (
   imageFile: File,
-  apiKey: string
+  apiKey: string,
+  modelId: string = 'your-model-id',
+  modelVersion: string = 'your-model-version'
 ): Promise<PredictionResponse> => {
   try {
     console.log('Analyzing image with Roboflow API...', imageFile.name);
@@ -30,7 +32,7 @@ export const analyzeImage = async (
     
     // Make the actual API request to Roboflow
     const response = await fetch(
-      `https://detect.roboflow.com/your-model-id/your-model-version?api_key=${apiKey}`,
+      `https://detect.roboflow.com/${modelId}/${modelVersion}?api_key=${apiKey}`,
       {
         method: 'POST',
         body: formData,
