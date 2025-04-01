@@ -1,4 +1,3 @@
-
 interface PredictionResponse {
   predictions: {
     class: string;
@@ -9,6 +8,10 @@ interface PredictionResponse {
     height?: number;
   }[];
   time: number;
+  image?: {
+    width: number;
+    height: number;
+  };
 }
 
 export const analyzeImage = async (
@@ -55,14 +58,46 @@ export const analyzeImage = async (
 };
 
 export const formatPredictions = (response: PredictionResponse) => {
-  return response.predictions.map(pred => ({
-    class: pred.class,
-    confidence: pred.confidence,
-    bbox: pred.x !== undefined ? {
-      x: pred.x - (pred.width || 0) / 2, // Convert from center to top-left
-      y: pred.y - (pred.height || 0) / 2,
-      width: pred.width || 0,
-      height: pred.height || 0
-    } : undefined
-  }));
+  // Extract image dimensions from response if available
+  const imageWidth = response.image?.width || 0;
+  const imageHeight = response.image?.height || 0;
+  
+  return response.predictions.map(pred => {
+    // Check if bounding box coordinates are available
+    if (pred.x === undefined || pred.y === undefined || !pred.width || !pred.height) {
+      return {
+        class: pred.class,
+        confidence: pred.confidence,
+        bbox: undefined
+      };
+    }
+    
+    // Calculate normalized coordinates (0-1 range)
+    // If image dimensions are available in the response, use them for normalization
+    // Otherwise, assume coordinates are already normalized
+    let x = pred.x;
+    let y = pred.y;
+    let width = pred.width;
+    let height = pred.height;
+    
+    if (imageWidth > 0 && imageHeight > 0) {
+      // Convert absolute coordinates to normalized (0-1)
+      x = x / imageWidth;
+      y = y / imageHeight;
+      width = width / imageWidth;
+      height = height / imageHeight;
+    }
+
+    // Roboflow returns center coordinates, convert to top-left for display
+    return {
+      class: pred.class,
+      confidence: pred.confidence,
+      bbox: {
+        x: x - (width / 2), // Convert from center to top-left
+        y: y - (height / 2),
+        width: width,
+        height: height
+      }
+    };
+  });
 };

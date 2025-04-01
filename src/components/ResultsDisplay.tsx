@@ -50,15 +50,29 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                     .filter(pred => pred.bbox)
                     .map((pred, idx) => {
                       const bbox = pred.bbox!;
+                      
+                      // Only render valid bounding boxes
+                      if (!Number.isFinite(bbox.x) || !Number.isFinite(bbox.y) || 
+                          !Number.isFinite(bbox.width) || !Number.isFinite(bbox.height)) {
+                        console.warn('Invalid bounding box values:', bbox);
+                        return null;
+                      }
+                      
+                      // Ensure bbox values are within 0-1 range
+                      const x = Math.max(0, Math.min(1, bbox.x));
+                      const y = Math.max(0, Math.min(1, bbox.y));
+                      const width = Math.max(0, Math.min(1, bbox.width));
+                      const height = Math.max(0, Math.min(1, bbox.height));
+                      
                       return (
                         <div
                           key={idx}
                           className="absolute border-2 border-blue-500"
                           style={{
-                            left: `${bbox.x * 100}%`,
-                            top: `${bbox.y * 100}%`,
-                            width: `${bbox.width * 100}%`,
-                            height: `${bbox.height * 100}%`,
+                            left: `${x * 100}%`,
+                            top: `${y * 100}%`,
+                            width: `${width * 100}%`,
+                            height: `${height * 100}%`,
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                           }}
                         >
