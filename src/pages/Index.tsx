@@ -6,7 +6,8 @@ import ResultsDisplay from '@/components/ResultsDisplay';
 import { analyzeImage, formatPredictions } from '@/services/roboflowService';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, ExternalLink, Key } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 const Index = () => {
   const { toast } = useToast();
@@ -14,15 +15,26 @@ const Index = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [predictions, setPredictions] = useState<any[] | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [apiKey, setApiKey] = useState('');
   
   const handleImageSelect = async (file: File, previewUrl: string) => {
     setSelectedImage(file);
     setImagePreview(previewUrl);
     setPredictions(null);
     
+    // Validate API key is present
+    if (!apiKey.trim()) {
+      toast({
+        title: "API Key Required",
+        description: "Please enter your Roboflow API key before analyzing images.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       setIsProcessing(true);
-      const results = await analyzeImage(file);
+      const results = await analyzeImage(file, apiKey.trim());
       setPredictions(formatPredictions(results));
       toast({
         title: "Analysis complete!",
@@ -32,7 +44,7 @@ const Index = () => {
       console.error('Error analyzing image:', error);
       toast({
         title: "Analysis failed",
-        description: "There was an error processing your image.",
+        description: "There was an error processing your image. Please check your API key and try again.",
         variant: "destructive"
       });
       setPredictions([]);
@@ -79,6 +91,35 @@ const Index = () => {
         <section id="upload-section" className="py-12">
           <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6 md:p-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">Upload Your Image</h2>
+            
+            {/* API Key Input */}
+            <div className="mb-6 border-b pb-6">
+              <label htmlFor="api-key" className="block text-sm font-medium text-gray-700 mb-2">
+                Roboflow API Key
+              </label>
+              <div className="flex gap-2">
+                <div className="relative flex-grow">
+                  <Input
+                    id="api-key"
+                    type="password"
+                    placeholder="Enter your Roboflow API key"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    className="pl-10"
+                  />
+                  <Key className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('https://docs.roboflow.com/api-reference/authentication', '_blank')}
+                >
+                  Get API Key
+                </Button>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                Your API key is required to access the Roboflow model. It will not be stored on our servers.
+              </p>
+            </div>
             
             <ImageUpload onImageSelect={handleImageSelect} isProcessing={isProcessing} />
             

@@ -13,67 +13,43 @@ interface PredictionResponse {
 
 export const analyzeImage = async (
   imageFile: File,
-  apiKey: string = ''
+  apiKey: string
 ): Promise<PredictionResponse> => {
-  // For demonstration purposes, the function returns mock data
-  // Replace this with actual API integration when you have your Roboflow API key
-  
-  console.log('Analyzing image...', imageFile.name);
-  
-  // Mock delay to simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  try {
+    console.log('Analyzing image with Roboflow API...', imageFile.name);
 
-  // Mock response - replace with actual API call to Roboflow
-  // Example of how you might implement the actual API call:
-  /*
-  const formData = new FormData();
-  formData.append('file', imageFile);
-  
-  const response = await fetch(
-    `https://detect.roboflow.com/your-model-id/your-model-version?api_key=${apiKey}`,
-    {
-      method: 'POST',
-      body: formData,
+    // Create form data to send to Roboflow
+    const formData = new FormData();
+    formData.append('file', imageFile);
+    
+    // Check if API key is provided
+    if (!apiKey) {
+      console.error('No API key provided');
+      throw new Error('API key is required to analyze images');
     }
-  );
-  
-  if (!response.ok) {
-    throw new Error('Failed to analyze image');
-  }
-  
-  return await response.json();
-  */
-
-  // Mock data for demonstration
-  return {
-    predictions: [
+    
+    // Make the actual API request to Roboflow
+    const response = await fetch(
+      `https://detect.roboflow.com/your-model-id/your-model-version?api_key=${apiKey}`,
       {
-        class: "Person",
-        confidence: 0.92,
-        x: 0.2,
-        y: 0.3,
-        width: 0.4,
-        height: 0.5
-      },
-      {
-        class: "Car",
-        confidence: 0.87,
-        x: 0.7,
-        y: 0.6,
-        width: 0.25,
-        height: 0.2
-      },
-      {
-        class: "Dog",
-        confidence: 0.76,
-        x: 0.1,
-        y: 0.8,
-        width: 0.15,
-        height: 0.15
+        method: 'POST',
+        body: formData,
       }
-    ],
-    time: 0.6542
-  };
+    );
+    
+    if (!response.ok) {
+      console.error('API response not OK:', response.status, response.statusText);
+      throw new Error(`Failed to analyze image: ${response.statusText}`);
+    }
+    
+    // Parse and return the response
+    const data = await response.json();
+    console.log('Roboflow API response:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in analyzeImage:', error);
+    throw error;
+  }
 };
 
 export const formatPredictions = (response: PredictionResponse) => {
