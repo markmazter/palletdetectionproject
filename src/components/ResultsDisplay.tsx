@@ -1,6 +1,8 @@
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { SlidersHorizontal } from 'lucide-react';
 
 interface Prediction {
   class: string;
@@ -24,13 +26,42 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   predictions,
   isProcessing
 }) => {
+  const [confidenceThreshold, setConfidenceThreshold] = useState(0.25); // Default threshold at 25%
+
   if (!imageUrl) {
     return null;
   }
 
+  // Filter predictions based on confidence threshold
+  const filteredPredictions = predictions?.filter(
+    pred => pred.confidence >= confidenceThreshold
+  ) || [];
+
   return (
     <div className="w-full mt-8">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Results</h2>
+      
+      {/* Confidence Threshold Slider */}
+      {predictions && predictions.length > 0 && !isProcessing && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <SlidersHorizontal size={16} className="text-gray-500" />
+            <h3 className="text-sm font-medium">Confidence Threshold: {Math.round(confidenceThreshold * 100)}%</h3>
+          </div>
+          <div className="px-2">
+            <Slider
+              value={[confidenceThreshold * 100]}
+              onValueChange={(values) => setConfidenceThreshold(values[0] / 100)}
+              min={0}
+              max={100}
+              step={1}
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Showing {filteredPredictions.length} of {predictions.length} detections
+          </p>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Preview */}
@@ -44,9 +75,9 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
               />
               
               {/* Overlay bounding boxes if we have them */}
-              {predictions && predictions.length > 0 && !isProcessing && (
+              {filteredPredictions && filteredPredictions.length > 0 && !isProcessing && (
                 <div className="absolute inset-0">
-                  {predictions
+                  {filteredPredictions
                     .filter(pred => pred.bbox)
                     .map((pred, idx) => {
                       const bbox = pred.bbox!;
@@ -61,16 +92,21 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       // Ensure bbox values are within 0-1 range
                       const x = Math.max(0, Math.min(1, bbox.x));
                       const y = Math.max(0, Math.min(1, bbox.y));
-                      const width = Math.max(0, Math.min(1, bbox.width));
-                      const height = Math.max(0, Math.min(1, bbox.height));
+                      // Make bounding boxes smaller by reducing width and height
+                      const width = Math.max(0, Math.min(1, bbox.width * 0.8)); // Reduce width by 20%
+                      const height = Math.max(0, Math.min(1, bbox.height * 0.8)); // Reduce height by 20%
+                      
+                      // Recenter the box so it's still centered on the same point
+                      const adjustedX = x + (bbox.width - width) / 2;
+                      const adjustedY = y + (bbox.height - height) / 2;
                       
                       return (
                         <div
                           key={idx}
                           className="absolute border-2 border-blue-500"
                           style={{
-                            left: `${x * 100}%`,
-                            top: `${y * 100}%`,
+                            left: `${adjustedX * 100}%`,
+                            top: `${adjustedY * 100}%`,
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -97,9 +133,9 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
               <div className="flex items-center justify-center h-40">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
               </div>
-            ) : predictions && predictions.length > 0 ? (
+            ) : filteredPredictions && filteredPredictions.length > 0 ? (
               <div className="space-y-3">
-                {predictions.map((pred, idx) => (
+                {filteredPredictions.map((pred, idx) => (
                   <div
                     key={idx}
                     className="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
@@ -113,7 +149,11 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
               </div>
             ) : (
               <div className="flex items-center justify-center h-40 text-gray-400">
-                {imageUrl ? "No objects detected" : "Upload an image to see predictions"}
+                {imageUrl ? 
+                  (predictions && predictions.length > 0 ? 
+                    "No objects above confidence threshold" : 
+                    "No objects detected") : 
+                  "Upload an image to see predictions"}
               </div>
             )}
           </CardContent>
