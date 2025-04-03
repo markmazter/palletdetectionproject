@@ -2,7 +2,7 @@
 import { FC, useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { SlidersHorizontal, Layers } from 'lucide-react';
+import { SlidersHorizontal, Layers, Text, EyeOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface Prediction {
@@ -28,6 +28,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   isProcessing
 }) => {
   const [confidenceThreshold, setConfidenceThreshold] = useState(0.25); // Default threshold at 25%
+  const [textSize, setTextSize] = useState(12); // Default text size in pixels
+  const [labelOpacity, setLabelOpacity] = useState(1); // Default opacity at 100%
   
   // Always define hooks at the top level, never conditionally
   const filteredPredictions = useMemo(() => {
@@ -62,25 +64,62 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
     <div className="w-full mt-8">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Results</h2>
       
-      {/* Confidence Threshold Slider */}
+      {/* Controls Panel */}
       {predictions && predictions.length > 0 && !isProcessing && (
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            <SlidersHorizontal size={16} className="text-gray-500" />
-            <h3 className="text-sm font-medium">Confidence Threshold: {Math.round(confidenceThreshold * 100)}%</h3>
+          {/* Confidence Threshold Control */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <SlidersHorizontal size={16} className="text-gray-500" />
+              <h3 className="text-sm font-medium">Confidence Threshold: {Math.round(confidenceThreshold * 100)}%</h3>
+            </div>
+            <div className="px-2">
+              <Slider
+                value={[confidenceThreshold * 100]}
+                onValueChange={(values) => setConfidenceThreshold(values[0] / 100)}
+                min={0}
+                max={100}
+                step={1}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Showing {filteredPredictions.length} of {predictions.length} detections
+            </p>
           </div>
-          <div className="px-2">
-            <Slider
-              value={[confidenceThreshold * 100]}
-              onValueChange={(values) => setConfidenceThreshold(values[0] / 100)}
-              min={0}
-              max={100}
-              step={1}
-            />
+          
+          {/* Text Size Control */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Text size={16} className="text-gray-500" />
+              <h3 className="text-sm font-medium">Label Size: {textSize}px</h3>
+            </div>
+            <div className="px-2">
+              <Slider
+                value={[textSize]}
+                onValueChange={(values) => setTextSize(values[0])}
+                min={8}
+                max={20}
+                step={1}
+              />
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Showing {filteredPredictions.length} of {predictions.length} detections
-          </p>
+          
+          {/* Label Opacity Control */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <EyeOff size={16} className="text-gray-500" />
+              <h3 className="text-sm font-medium">Label Opacity: {Math.round(labelOpacity * 100)}%</h3>
+            </div>
+            <div className="px-2">
+              <Slider
+                value={[labelOpacity * 100]}
+                onValueChange={(values) => setLabelOpacity(values[0] / 100)}
+                min={10}
+                max={100}
+                step={1}
+              />
+            </div>
+          </div>
         </div>
       )}
       
@@ -133,7 +172,13 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                           }}
                         >
-                          <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-sm">
+                          <span 
+                            className="absolute top-0 left-0 bg-blue-500 text-white px-1 rounded-sm"
+                            style={{
+                              fontSize: `${textSize}px`,
+                              opacity: labelOpacity,
+                            }}
+                          >
                             {pred.class} {Math.round(pred.confidence * 100)}%
                           </span>
                         </div>
