@@ -110,11 +110,9 @@ const Index = () => {
                     <SelectValue placeholder="Select version" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Version 1</SelectItem>
-                    <SelectItem value="2">Version 2</SelectItem>
-                    <SelectItem value="3">Version 3</SelectItem>
-                    <SelectItem value="4">Version 4</SelectItem>
-                    <SelectItem value="5">Version 5</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2 Recommended</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
