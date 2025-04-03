@@ -105,12 +105,13 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       return (
                         <div
                           key={idx}
-                          className="absolute border-1"
+                          className="absolute"
                           style={{
                             left: `${adjustedX * 100}%`,
                             top: `${adjustedY * 100}%`,
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
+                            borderWidth: '1.5px',
                             borderColor: '#FFFF00',
                             backgroundColor: 'rgba(255, 237, 41, 0.1)',
                           }}
