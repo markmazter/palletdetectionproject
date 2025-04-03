@@ -191,8 +191,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                     <Slider
                       value={[textSize]}
                       onValueChange={(values) => setTextSize(values[0])}
-                      min={8}
-                      max={20}
+                      min={1}
+                      max={15}
                       step={1}
                       className="h-1.5" // Make slider smaller
                     />
@@ -209,7 +209,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                     <Slider
                       value={[labelOpacity * 100]}
                       onValueChange={(values) => setLabelOpacity(values[0] / 100)}
-                      min={10}
+                      min={0}
                       max={100}
                       step={1}
                       className="h-1.5" // Make slider smaller
