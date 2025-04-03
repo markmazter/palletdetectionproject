@@ -2,7 +2,7 @@
 import { FC, useState, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Upload, Image } from 'lucide-react';
+import { Upload, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
   onImageSelect: (file: File, previewUrl: string) => void;
@@ -49,11 +49,11 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
 
   const resizeImage = (file: File): Promise<{ resizedFile: File; previewUrl: string }> => {
     return new Promise((resolve, reject) => {
-      const img = new Image();
+      const imgElement = new window.Image();
       const reader = new FileReader();
       
       reader.onload = (e) => {
-        img.onload = () => {
+        imgElement.onload = () => {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           
@@ -63,7 +63,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
           
           if (ctx) {
             // Draw the image on the canvas, resizing it to 640x640
-            ctx.drawImage(img, 0, 0, 640, 640);
+            ctx.drawImage(imgElement, 0, 0, 640, 640);
             
             // Convert the canvas to a blob
             canvas.toBlob((blob) => {
@@ -87,11 +87,11 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
           }
         };
         
-        img.onerror = () => {
+        imgElement.onerror = () => {
           reject(new Error('Failed to load image'));
         };
         
-        img.src = e.target?.result as string;
+        imgElement.src = e.target?.result as string;
       };
       
       reader.onerror = () => {
@@ -183,7 +183,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
           onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
           className="flex items-center gap-2"
         >
-          <Image className="h-4 w-4" />
+          <ImageIcon className="h-4 w-4" />
           Select Image
         </Button>
       </div>
