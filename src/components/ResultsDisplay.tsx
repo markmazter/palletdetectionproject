@@ -28,15 +28,13 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   isProcessing
 }) => {
   const [confidenceThreshold, setConfidenceThreshold] = useState(0.25); // Default threshold at 25%
-
-  if (!imageUrl) {
-    return null;
-  }
-
-  // Filter predictions based on confidence threshold
-  const filteredPredictions = predictions?.filter(
-    pred => pred.confidence >= confidenceThreshold
-  ) || [];
+  
+  // Always define hooks at the top level, never conditionally
+  const filteredPredictions = useMemo(() => {
+    return (predictions?.filter(
+      pred => pred.confidence >= confidenceThreshold
+    ) || []);
+  }, [predictions, confidenceThreshold]);
   
   // Count occurrences of each class
   const classCounts = useMemo(() => {
@@ -51,7 +49,14 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   }, [filteredPredictions]);
   
   // Get total count
-  const totalCount = Object.values(classCounts).reduce((sum, count) => sum + count, 0);
+  const totalCount = useMemo(() => {
+    return Object.values(classCounts).reduce((sum, count) => sum + count, 0);
+  }, [classCounts]);
+
+  // Early return outside of hooks
+  if (!imageUrl) {
+    return null;
+  }
 
   return (
     <div className="w-full mt-8">
