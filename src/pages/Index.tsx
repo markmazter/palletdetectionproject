@@ -65,7 +65,7 @@ const Index = () => {
             AI Vision Model
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Upload an image and our AI will analyze it to detect and classify objects in real-time.
+            Upload an image and the AI model will analyze it to detect and count objects in real-time. This AI model was made for internship project (Prabpol Veeraphan Burapha University International College)
           </p>
           <div className="flex justify-center space-x-4">
             <Button 
@@ -140,7 +140,7 @@ const Index = () => {
                   <span className="text-blue-600 text-xl font-bold">1</span>
                 </div>
                 <h3 className="text-xl font-medium mb-3">Upload</h3>
-                <p className="text-gray-600">Upload your image using our simple drag & drop interface</p>
+                <p className="text-gray-600">Upload your image using simple drag & drop interface</p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm text-center">
@@ -148,7 +148,7 @@ const Index = () => {
                   <span className="text-blue-600 text-xl font-bold">2</span>
                 </div>
                 <h3 className="text-xl font-medium mb-3">Process</h3>
-                <p className="text-gray-600">Our AI model analyzes your image to detect and classify objects</p>
+                <p className="text-gray-600">The AI model analyzes the image to detect and count objects</p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm text-center">
@@ -167,8 +167,8 @@ const Index = () => {
           <div className="max-w-4xl mx-auto px-6">
             <h2 className="text-3xl font-bold mb-6 text-center">About This Project</h2>
             <p className="text-gray-700 mb-4">
-              This application uses computer vision AI models from Roboflow to analyze and identify objects in images. 
-              The model has been trained on a diverse dataset to recognize common objects with high accuracy.
+              This application uses AI models from Roboflow to analyze and identify objects in images. 
+              The model has been trained on a dataset to recognize pallets with high accuracy.
             </p>
             <p className="text-gray-700">
               You can select different model versions to see how they perform on your images. Each version may have
