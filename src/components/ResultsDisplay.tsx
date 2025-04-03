@@ -111,7 +111,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                             top: `${adjustedY * 100}%`,
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
-                            borderWidth: '1.5px',
+                            borderWidth: '1px',
                             borderColor: '#FFFF00',
                             backgroundColor: 'rgba(255, 237, 41, 0.1)',
                           }}
