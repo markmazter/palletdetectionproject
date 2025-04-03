@@ -26,7 +26,7 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Only keep the model version as configurable
-  const [modelVersion, setModelVersion] = useState('1');
+  const [modelVersion, setModelVersion] = useState('2');
   
   const handleImageSelect = async (file: File, previewUrl: string) => {
     setSelectedImage(file);
