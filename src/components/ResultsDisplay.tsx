@@ -28,8 +28,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   predictions,
   isProcessing
 }) => {
-  const [confidenceThreshold, setConfidenceThreshold] = useState(0.25); // Default threshold at 25%
-  const [textSize, setTextSize] = useState(12); // Default text size in pixels
+  const [confidenceThreshold, setConfidenceThreshold] = useState(0.50); // Default threshold at 50%
+  const [textSize, setTextSize] = useState(5); // Default text size in pixels
   const [labelOpacity, setLabelOpacity] = useState(1); // Default opacity at 100%
   
   // Always define hooks at the top level, never conditionally
@@ -95,8 +95,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       const x = Math.max(0, Math.min(1, bbox.x));
                       const y = Math.max(0, Math.min(1, bbox.y));
                       // Make bounding boxes smaller by reducing width and height
-                      const width = Math.max(0, Math.min(1, bbox.width * 0.8)); // Reduce width by 20%
-                      const height = Math.max(0, Math.min(1, bbox.height * 0.8)); // Reduce height by 20%
+                      const width = Math.max(0, Math.min(1, bbox.width * 1)); // Reduce width by 20%
+                      const height = Math.max(0, Math.min(1, bbox.height * 1)); // Reduce height by 20%
                       
                       // Recenter the box so it's still centered on the same point
                       const adjustedX = x + (bbox.width - width) / 2;
@@ -105,22 +105,22 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       return (
                         <div
                           key={idx}
-                          className="absolute border-2"
+                          className="absolute border-1"
                           style={{
                             left: `${adjustedX * 100}%`,
                             top: `${adjustedY * 100}%`,
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
-                            borderColor: '#FFED29',
+                            borderColor: '#FFFF00',
                             backgroundColor: 'rgba(255, 237, 41, 0.1)',
                           }}
                         >
                           <span 
-                            className="absolute top-0 left-0 px-1 rounded-sm"
+                            className="absolute top-0 left-0 px-0.5"
                             style={{
                               fontSize: `${textSize}px`,
                               opacity: labelOpacity,
-                              backgroundColor: '#FFED29',
+                              backgroundColor: '#FFFF00',
                               color: '#000',
                             }}
                           >
@@ -191,8 +191,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                     <Slider
                       value={[textSize]}
                       onValueChange={(values) => setTextSize(values[0])}
-                      min={1}
-                      max={15}
+                      min={0}
+                      max={10}
                       step={1}
                       className="h-1.5" // Make slider smaller
                     />
