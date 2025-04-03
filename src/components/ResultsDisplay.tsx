@@ -1,8 +1,9 @@
 
-import { FC, useState } from 'react';
+import { FC, useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, Layers } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface Prediction {
   class: string;
@@ -36,6 +37,21 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   const filteredPredictions = predictions?.filter(
     pred => pred.confidence >= confidenceThreshold
   ) || [];
+  
+  // Count occurrences of each class
+  const classCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    filteredPredictions.forEach(pred => {
+      if (!counts[pred.class]) {
+        counts[pred.class] = 0;
+      }
+      counts[pred.class]++;
+    });
+    return counts;
+  }, [filteredPredictions]);
+  
+  // Get total count
+  const totalCount = Object.values(classCounts).reduce((sum, count) => sum + count, 0);
 
   return (
     <div className="w-full mt-8">
@@ -121,6 +137,28 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                 </div>
               )}
             </div>
+            
+            {/* Object Count Summary Box */}
+            {filteredPredictions && filteredPredictions.length > 0 && !isProcessing && (
+              <div className="bg-white border-t p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Layers size={16} className="text-blue-500" />
+                  <h3 className="text-sm font-medium">Detection Summary</h3>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {Object.entries(classCounts).map(([className, count]) => (
+                    <Badge key={className} variant="secondary" className="text-xs">
+                      {className}: {count}
+                    </Badge>
+                  ))}
+                </div>
+                
+                <div className="text-sm font-medium text-blue-700">
+                  Total: {totalCount} {totalCount === 1 ? 'object' : 'objects'} detected
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

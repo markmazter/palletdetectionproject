@@ -47,7 +47,62 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
   };
 
-  const handleFile = (file: File) => {
+  const resizeImage = (file: File): Promise<{ resizedFile: File; previewUrl: string }> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Set canvas dimensions to 640x640
+          canvas.width = 640;
+          canvas.height = 640;
+          
+          if (ctx) {
+            // Draw the image on the canvas, resizing it to 640x640
+            ctx.drawImage(img, 0, 0, 640, 640);
+            
+            // Convert the canvas to a blob
+            canvas.toBlob((blob) => {
+              if (blob) {
+                // Create a new file from the blob
+                const resizedFile = new File([blob], file.name, {
+                  type: file.type,
+                  lastModified: Date.now()
+                });
+                
+                // Create a data URL for preview
+                const previewUrl = canvas.toDataURL(file.type);
+                
+                resolve({ resizedFile, previewUrl });
+              } else {
+                reject(new Error('Failed to create blob from canvas'));
+              }
+            }, file.type);
+          } else {
+            reject(new Error('Failed to get canvas context'));
+          }
+        };
+        
+        img.onerror = () => {
+          reject(new Error('Failed to load image'));
+        };
+        
+        img.src = e.target?.result as string;
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFile = async (file: File) => {
     if (!file.type.match('image.*')) {
       toast({
         title: "Invalid file type",
@@ -57,12 +112,25 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const previewUrl = reader.result as string;
-      onImageSelect(file, previewUrl);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Resize the image to 640x640
+      const { resizedFile, previewUrl } = await resizeImage(file);
+      
+      // Pass the resized file and preview URL to the parent component
+      onImageSelect(resizedFile, previewUrl);
+      
+      toast({
+        title: "Image resized",
+        description: "Your image has been resized to 640x640 for optimal detection",
+      });
+    } catch (error) {
+      console.error("Error resizing image:", error);
+      toast({
+        title: "Error processing image",
+        description: "Failed to resize your image. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
