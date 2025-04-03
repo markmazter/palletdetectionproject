@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/select';
 
 // Hardcoded API key and model ID
-const API_KEY = 'YOUR_ROBOFLOW_API_KEY'; // Replace with your actual API key
-const MODEL_ID = 'YOUR_MODEL_ID'; // Replace with your actual model ID
+const API_KEY = 'KO8dKRKesUU1PwKj3TXs'; // Replace with your actual API key
+const MODEL_ID = 'counting-pallets-b9xos'; // Replace with your actual model ID
 
 const Index = () => {
   const { toast } = useToast();
