@@ -18,7 +18,7 @@ const Header: FC = () => {
                 <path d="M15 9h.01"></path>
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-gray-800">AI Vision Model</h1>
+            <h1 className="text-xl font-bold text-gray-800">AI Pallet Detection Model</h1>
           </div>
           <nav className="mt-4 md:mt-0">
             <ul className="flex space-x-6">
