@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Header from '@/components/Header';
 import ImageUpload from '@/components/ImageUpload';
@@ -13,10 +14,18 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 // Hardcoded API key and model ID
 const API_KEY = 'KO8dKRKesUU1PwKj3TXs'; // Replace with your actual API key
 const MODEL_ID = 'counting-pallets-b9xos'; // Replace with your actual model ID
+
+// Model version precision data
+const MODEL_PRECISION = {
+  '1': '61.0%',
+  '2': '91.9%',
+  '3': '87.1%'
+};
 
 const Index = () => {
   const { toast } = useToast();
@@ -97,24 +106,50 @@ const Index = () => {
             <div className="mb-6 border-b pb-6">
               <h3 className="text-lg font-medium text-gray-700 mb-4">Model Configuration</h3>
               
-              {/* Model Version Dropdown */}
-              <div className="max-w-xs">
-                <label htmlFor="model-version" className="block text-sm font-medium text-gray-700 mb-2">
-                  Model Version
-                </label>
-                <Select
-                  value={modelVersion}
-                  onValueChange={(value) => setModelVersion(value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select version" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2 Recommended</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
+                {/* Model Version Dropdown */}
+                <div className="w-full md:w-48">
+                  <label htmlFor="model-version" className="block text-sm font-medium text-gray-700 mb-2">
+                    Model Version
+                  </label>
+                  <Select
+                    value={modelVersion}
+                    onValueChange={(value) => setModelVersion(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select version" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2 Recommended</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Model Precision Display */}
+                <div className="flex flex-wrap gap-3 mb-2">
+                  <div className={`rounded-md border px-3 py-2 ${modelVersion === '1' ? 'bg-orange-50 border-orange-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="text-xs text-gray-500">Version 1</div>
+                    <div className="font-medium text-sm flex items-center gap-1">
+                      Precision: <Badge variant={modelVersion === '1' ? 'default' : 'secondary'} className={modelVersion === '1' ? 'bg-orange-500' : ''}>61.0%</Badge>
+                    </div>
+                  </div>
+                  
+                  <div className={`rounded-md border px-3 py-2 ${modelVersion === '2' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="text-xs text-gray-500">Version 2</div>
+                    <div className="font-medium text-sm flex items-center gap-1">
+                      Precision: <Badge variant={modelVersion === '2' ? 'default' : 'secondary'} className={modelVersion === '2' ? 'bg-green-500' : ''}>91.9%</Badge>
+                    </div>
+                  </div>
+                  
+                  <div className={`rounded-md border px-3 py-2 ${modelVersion === '3' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="text-xs text-gray-500">Version 3</div>
+                    <div className="font-medium text-sm flex items-center gap-1">
+                      Precision: <Badge variant={modelVersion === '3' ? 'default' : 'secondary'} className={modelVersion === '3' ? 'bg-blue-500' : ''}>87.1%</Badge>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             
