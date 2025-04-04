@@ -95,8 +95,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       const x = Math.max(0, Math.min(1, bbox.x));
                       const y = Math.max(0, Math.min(1, bbox.y));
                       // Make bounding boxes smaller by reducing width and height
-                      const width = Math.max(0, Math.min(1, bbox.width * 1)); // Reduce width by 20%
-                      const height = Math.max(0, Math.min(1, bbox.height * 1)); // Reduce height by 20%
+                      const width = Math.max(0, Math.min(1, bbox.width * 1)); // Reduce width by 0%
+                      const height = Math.max(0, Math.min(1, bbox.height * 1)); // Reduce height by 0%
                       
                       // Recenter the box so it's still centered on the same point
                       const adjustedX = x + (bbox.width - width) / 2;
@@ -113,7 +113,6 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                             height: `${height * 100}%`,
                             borderWidth: '1px',
                             borderColor: '#FFFF00',
-                            backgroundColor: 'rgba(255, 237, 41, 0.1)',
                           }}
                         >
                           <span 

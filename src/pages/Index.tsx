@@ -45,7 +45,7 @@ const Index = () => {
       console.error('Error analyzing image:', error);
       toast({
         title: "Analysis failed",
-        description: "There was an error processing your image. Please check your model version and try again.",
+        description: "There was an error processing your image. Please check and try again.",
         variant: "destructive"
       });
       setPredictions([]);
@@ -167,7 +167,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto px-6">
             <h2 className="text-3xl font-bold mb-6 text-center">About This Project</h2>
             <p className="text-gray-700 mb-4">
-              This application uses AI models from Roboflow to analyze and identify objects in images. 
+              This application uses AI models create from Roboflow to analyze and identify CHEP pallets in images. 
               The model has been trained on a dataset to recognize pallets with high accuracy.
             </p>
             <p className="text-gray-700">
@@ -181,11 +181,7 @@ const Index = () => {
       <footer className="bg-gray-800 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="mb-4 md:mb-0">© {new Date().getFullYear()} AI Vision Model</p>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-blue-300 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-blue-300 transition-colors">Terms of Service</a>
-            </div>
+            <p className="mb-4 md:mb-0">{new Date().getFullYear()} Internship, Prabpol Veeraphan SLSM 64110059</p>
           </div>
         </div>
       </footer>
