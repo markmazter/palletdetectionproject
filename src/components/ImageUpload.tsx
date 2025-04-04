@@ -6,9 +6,9 @@ import { Upload, Image as ImageIcon } from 'lucide-react';
 
 // Sample image paths and descriptions
 const sampleImages = [
-  { path: "/samples/sample1.jpg", description: "Stacked Pallets" },
-  { path: "/samples/sample2.jpg", description: "Warehouse Pallets" },
-  { path: "/samples/sample3.jpg", description: "Loading Dock" },
+  { path: "/samples/sample1.jpg", description: "sample1" },
+  { path: "/samples/sample2.jpg", description: "sample2" },
+  { path: "/samples/sample3.jpg", description: "sample3" },
 ];
 
 interface ImageUploadProps {
