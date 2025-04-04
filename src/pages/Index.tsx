@@ -62,7 +62,7 @@ const Index = () => {
         {/* Hero Section */}
         <section className="py-12 md:py-20 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            AI Vision Model
+            AI-Based Pallet Detection Model
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Upload an image and the AI model will analyze it to detect and count objects in real-time. This AI model was made for internship project (Prabpol Veeraphan Burapha University International College)
