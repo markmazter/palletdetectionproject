@@ -149,7 +149,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                   ))}
                 </div>
                 
-                <div className="text-sm font-medium text-yellow-700">
+                <div className="text-sm font-medium" style={{ color: '#22c55e' }}>
                   Total: {totalCount} {totalCount === 1 ? 'object' : 'objects'} detected
                 </div>
               </div>
@@ -239,7 +239,13 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                         className="p-2 bg-gray-50 rounded-lg flex justify-between items-center"
                       >
                         <span className="font-medium text-gray-700">{pred.class}</span>
-                        <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        <span
+                          className="text-xs font-medium px-2 py-1 rounded"
+                          style={{
+                            backgroundColor: '#22c55e',
+                            color: '#ffffff'
+                          }}
+                        >
                           {Math.round(pred.confidence * 100)}%
                         </span>
                       </div>
