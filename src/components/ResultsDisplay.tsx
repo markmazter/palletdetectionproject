@@ -29,7 +29,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   isProcessing
 }) => {
   const [confidenceThreshold, setConfidenceThreshold] = useState(0.50); // Default threshold at 50%
-  const [textSize, setTextSize] = useState(5); // Default text size in pixels
+  const [textSize, setTextSize] = useState(3); // Default text size in pixels
   const [labelOpacity, setLabelOpacity] = useState(1); // Default opacity at 100%
   
   // Always define hooks at the top level, never conditionally
@@ -137,7 +137,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
             {filteredPredictions && filteredPredictions.length > 0 && !isProcessing && (
               <div className="bg-white border-t p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <Layers size={16} className="text-yellow-500" />
+                  <Layers size={16} style={{ color: '#ff0000' }} />
                   <h3 className="text-sm font-medium">Detection Summary</h3>
                 </div>
                 
@@ -222,14 +222,17 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
             {/* Detected Objects List - Now Scrollable */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <List size={16} className="text-yellow-500" />
+                <List size={16} style={{ color: '#ff0000' }} />
                 <h3 className="text-lg font-medium">Detected Objects</h3>
               </div>
               
               {isProcessing ? (
-                <div className="flex items-center justify-center h-40">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-500"></div>
-                </div>
+              <div className="flex items-center justify-center h-40">
+                <div
+                   className="animate-spin rounded-full h-10 w-10 border-b-2"
+                   style={{ borderColor: '#ff0000' }}
+                ></div>
+              </div>
               ) : filteredPredictions && filteredPredictions.length > 0 ? (
                 <ScrollArea className="h-[320px] pr-4">
                   <div className="space-y-2">
