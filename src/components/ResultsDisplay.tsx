@@ -149,7 +149,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                   ))}
                 </div>
                 
-                <div className="text-sm font-medium" style={{ color: '#22c55e' }}>
+                <div className="text-sm font-medium" style={{ color: '#ff0000' }}>
                   Total: {totalCount} {totalCount === 1 ? 'object' : 'objects'} detected
                 </div>
               </div>
@@ -242,7 +242,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                         <span
                           className="text-xs font-medium px-2 py-1 rounded"
                           style={{
-                            backgroundColor: '#22c55e',
+                            backgroundColor: '#030f37',
                             color: '#ffffff'
                           }}
                         >
