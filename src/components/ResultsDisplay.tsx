@@ -32,7 +32,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   const [labelOpacity, setLabelOpacity] = useState(1);
   const [boundingBoxColor, setBoundingBoxColor] = useState('#ffff00');
 
-  const availableColors = ['#ff0000', '#f000ff', '#ff00ff', '#ffff00', '#7cfc00',];
+  const availableColors = ['#ff00e0', '#ff0000', '#ff8700', '#ffff00', '#00fcfc', '#7cfc00'];
   
   // Always define hooks at the top level, never conditionally
   const filteredPredictions = useMemo(() => {
