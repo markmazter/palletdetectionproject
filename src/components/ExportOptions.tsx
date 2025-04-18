@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { FileImage, Download, File } from 'lucide-react';
+import { Camera } from 'lucide-react';
+import html2canvas from 'html2canvas';
 
 interface ExportOptionsProps {
   imageUrl: string | null;
@@ -9,36 +10,27 @@ interface ExportOptionsProps {
   totalCount: number;
 }
 
-const ExportOptions = ({ imageUrl, predictions, totalCount }: ExportOptionsProps) => {
-  const downloadImage = () => {
-    if (!imageUrl) return;
+const ExportOptions = ({ imageUrl, predictions }: ExportOptionsProps) => {
+  const captureResults = async () => {
+    const resultsElement = document.querySelector('.results-section');
+    if (!resultsElement) return;
     
-    const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = `detected-objects-${new Date().getTime()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const downloadResults = () => {
-    if (!predictions) return;
-    
-    const results = {
-      timestamp: new Date().toISOString(),
-      totalCount,
-      predictions
-    };
-    
-    const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `detection-results-${new Date().getTime()}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      const canvas = await html2canvas(resultsElement, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Higher quality
+      });
+      
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `detection-results-${new Date().getTime()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error capturing screenshot:', error);
+    }
   };
 
   if (!imageUrl || !predictions) return null;
@@ -49,19 +41,11 @@ const ExportOptions = ({ imageUrl, predictions, totalCount }: ExportOptionsProps
       <div className="flex gap-2">
         <Button 
           variant="outline" 
-          onClick={downloadImage}
+          onClick={captureResults}
           className="flex items-center gap-2"
         >
-          <FileImage className="h-4 w-4" />
-          Download Image
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={downloadResults}
-          className="flex items-center gap-2"
-        >
-          <File className="h-4 w-4" />
-          Download Results
+          <Camera className="h-4 w-4" />
+          Capture Results
         </Button>
       </div>
     </div>

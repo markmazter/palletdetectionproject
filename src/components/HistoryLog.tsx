@@ -10,6 +10,16 @@ interface HistoryEntry {
   imageUrl: string;
   totalCount: number;
   modelVersion: string;
+  predictions: Array<{
+    class: string;
+    confidence: number;
+    bbox?: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  }>;
 }
 
 interface HistoryLogProps {
@@ -41,7 +51,23 @@ const HistoryLog = ({ entries, onSelectEntry }: HistoryLogProps) => {
           {entries.map((entry) => (
             <div
               key={entry.id}
-              onClick={() => onSelectEntry(entry)}
+              onClick={() => {
+                // Pass the full entry including predictions for proper bounding box rendering
+                onSelectEntry({
+                  ...entry,
+                  predictions: entry.predictions.map(pred => ({
+                    ...pred,
+                    bbox: pred.bbox ? {
+                      ...pred.bbox,
+                      // Ensure bbox values are properly normalized
+                      x: Math.max(0, Math.min(1, pred.bbox.x)),
+                      y: Math.max(0, Math.min(1, pred.bbox.y)),
+                      width: Math.max(0, Math.min(1, pred.bbox.width)),
+                      height: Math.max(0, Math.min(1, pred.bbox.height))
+                    } : undefined
+                  }))
+                });
+              }}
               className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center justify-between">

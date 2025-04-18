@@ -1,4 +1,3 @@
-
 import { FC, useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -62,7 +61,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   }
 
   return (
-    <div className="w-full mt-8">
+    <div className="w-full mt-8 results-section">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Results</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
