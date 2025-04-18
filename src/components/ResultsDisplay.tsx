@@ -32,7 +32,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   const [labelOpacity, setLabelOpacity] = useState(1);
   const [boundingBoxColor, setBoundingBoxColor] = useState('#ffff00');
 
-  const availableColors = ['#ff0000', '#7f00ff', '#ff00ff', 'ffff00', '#7cfc00',];
+  const availableColors = ['#ff0000', '#f000ff', '#ff00ff', '#ffff00', '#7cfc00',];
   
   // Always define hooks at the top level, never conditionally
   const filteredPredictions = useMemo(() => {
@@ -231,7 +231,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                         key={color}
                         onClick={() => setBoundingBoxColor(color)}
                         className={`w-4 h-4 rounded-full transition-transform ${
-                          boundingBoxColor === color ? 'scale-110 ring-2 ring-gray-500' : ''
+                          boundingBoxColor === color ? 'scale-110 ring-2 ring-black' : ''
                         }`}
                         style={{
                           backgroundColor: color,
