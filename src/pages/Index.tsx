@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Header from '@/components/Header';
 import ImageUpload from '@/components/ImageUpload';
@@ -27,6 +28,16 @@ interface HistoryEntry {
   imageUrl: string;
   totalCount: number;
   modelVersion: string;
+  predictions: Array<{
+    class: string;
+    confidence: number;
+    bbox?: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  }>;
 }
 
 const Index = () => {
@@ -57,7 +68,8 @@ const Index = () => {
         timestamp: new Date().toISOString(),
         imageUrl: previewUrl,
         totalCount: results.predictions.length,
-        modelVersion: modelVersion
+        modelVersion: modelVersion,
+        predictions: formattedPredictions // Add the predictions to the historyEntry
       };
       setHistory(prev => [historyEntry, ...prev]);
       
@@ -81,6 +93,8 @@ const Index = () => {
   const handleHistorySelect = (entry: HistoryEntry) => {
     setImagePreview(entry.imageUrl);
     setModelVersion(entry.modelVersion);
+    // Also set the predictions from the history entry
+    setPredictions(entry.predictions);
     toast({
       title: "Loaded from history",
       description: `Showing analysis from ${new Date(entry.timestamp).toLocaleString()}`

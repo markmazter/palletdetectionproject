@@ -16,7 +16,7 @@ const ExportOptions = ({ imageUrl, predictions }: ExportOptionsProps) => {
     if (!resultsElement) return;
     
     try {
-      const canvas = await html2canvas(resultsElement, {
+      const canvas = await html2canvas(resultsElement as HTMLElement, {
         backgroundColor: '#ffffff',
         scale: 2, // Higher quality
       });
