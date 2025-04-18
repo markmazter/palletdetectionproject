@@ -27,9 +27,12 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   predictions,
   isProcessing
 }) => {
-  const [confidenceThreshold, setConfidenceThreshold] = useState(0.50); // Default threshold at 50%
-  const [textSize, setTextSize] = useState(3); // Default text size in pixels
-  const [labelOpacity, setLabelOpacity] = useState(1); // Default opacity at 100%
+  const [confidenceThreshold, setConfidenceThreshold] = useState(0.50);
+  const [textSize, setTextSize] = useState(3);
+  const [labelOpacity, setLabelOpacity] = useState(1);
+  const [boundingBoxColor, setBoundingBoxColor] = useState('#ffff00');
+
+  const availableColors = ['#ffff00', '#ff0000', '#39ff14', '#f414ff', '#ff14aa'];
   
   // Always define hooks at the top level, never conditionally
   const filteredPredictions = useMemo(() => {
@@ -111,7 +114,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
                             borderWidth: '1px',
-                            borderColor: '#FFFF00',
+                            borderColor: boundingBoxColor,
                           }}
                         >
                           <span 
@@ -119,7 +122,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                             style={{
                               fontSize: `${textSize}px`,
                               opacity: labelOpacity,
-                              backgroundColor: '#FFFF00',
+                              backgroundColor: boundingBoxColor,
                               color: '#000',
                             }}
                           >
@@ -213,6 +216,29 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       step={1}
                       className="h-1.5" // Make slider smaller
                     />
+                  </div>
+                </div>
+
+                {/* Bounding Box Color Control */}
+                <div className="mt-3">
+                  <div className="flex items-center gap-1 mb-2">
+                    <Text size={14} className="text-gray-500" />
+                    <h3 className="text-xs font-medium">Box Color</h3>
+                  </div>
+                  <div className="flex gap-2">
+                    {availableColors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setBoundingBoxColor(color)}
+                        className={`w-6 h-6 rounded-full transition-transform ${
+                          boundingBoxColor === color ? 'scale-110 ring-2 ring-gray-400' : ''
+                        }`}
+                        style={{
+                          backgroundColor: color,
+                        }}
+                        aria-label={`Select color ${color}`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
