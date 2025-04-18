@@ -7,7 +7,7 @@ import ExportOptions from './ExportOptions';
 import HistoryLog from './HistoryLog';
 import ModelVersionSelector from './ModelVersionSelector';
 import { analyzeImage, formatPredictions } from '@/services/roboflowService';
-import { API_KEY, MODEL_ID } from '@/config/constants';
+import { API_KEY, MODEL_ID, MODEL_PRECISION } from '@/config/constants';
 import type { HistoryEntry } from '@/types/history';
 
 const UploadSection = () => {
