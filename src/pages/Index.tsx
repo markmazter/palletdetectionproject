@@ -7,6 +7,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import ExportOptions from '@/components/ExportOptions';
+import HistoryLog from '@/components/HistoryLog';
 
 // Hardcoded API key and model ID
 const API_KEY = 'KO8dKRKesUU1PwKj3TXs'; // Replace with your actual API key
@@ -19,6 +21,14 @@ const MODEL_PRECISION = {
   '3': '87.1%'
 };
 
+interface HistoryEntry {
+  id: string;
+  timestamp: string;
+  imageUrl: string;
+  totalCount: number;
+  modelVersion: string;
+}
+
 const Index = () => {
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -28,6 +38,7 @@ const Index = () => {
   
   // Default model version is 2
   const [modelVersion, setModelVersion] = useState('2');
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   
   const handleImageSelect = async (file: File, previewUrl: string) => {
     setSelectedImage(file);
@@ -37,7 +48,19 @@ const Index = () => {
     try {
       setIsProcessing(true);
       const results = await analyzeImage(file, API_KEY, MODEL_ID, modelVersion);
-      setPredictions(formatPredictions(results));
+      const formattedPredictions = formatPredictions(results);
+      setPredictions(formattedPredictions);
+      
+      // Add to history
+      const historyEntry: HistoryEntry = {
+        id: new Date().getTime().toString(),
+        timestamp: new Date().toISOString(),
+        imageUrl: previewUrl,
+        totalCount: results.predictions.length,
+        modelVersion: modelVersion
+      };
+      setHistory(prev => [historyEntry, ...prev]);
+      
       toast({
         title: "Analysis complete!",
         description: `Detected ${results.predictions.length} objects in the image.`
@@ -53,6 +76,15 @@ const Index = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleHistorySelect = (entry: HistoryEntry) => {
+    setImagePreview(entry.imageUrl);
+    setModelVersion(entry.modelVersion);
+    toast({
+      title: "Loaded from history",
+      description: `Showing analysis from ${new Date(entry.timestamp).toLocaleString()}`
+    });
   };
 
   const handleVersionSelect = (version: string) => {
@@ -149,12 +181,27 @@ const Index = () => {
             
             <ImageUpload onImageSelect={handleImageSelect} isProcessing={isProcessing} />
             
-            {/* Results Section */}
-            <ResultsDisplay 
-              imageUrl={imagePreview}
-              predictions={predictions}
-              isProcessing={isProcessing}
-            />
+            {/* Results and Export Section */}
+            <div className="space-y-6">
+              <ResultsDisplay 
+                imageUrl={imagePreview}
+                predictions={predictions}
+                isProcessing={isProcessing}
+              />
+              
+              {predictions && predictions.length > 0 && (
+                <ExportOptions 
+                  imageUrl={imagePreview}
+                  predictions={predictions}
+                  totalCount={predictions.length}
+                />
+              )}
+              
+              <HistoryLog 
+                entries={history}
+                onSelectEntry={handleHistorySelect}
+              />
+            </div>
           </div>
         </section>
         
