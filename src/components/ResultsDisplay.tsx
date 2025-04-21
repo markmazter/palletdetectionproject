@@ -97,24 +97,20 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       // Ensure bbox values are within 0-1 range
                       const x = Math.max(0, Math.min(1, bbox.x));
                       const y = Math.max(0, Math.min(1, bbox.y));
-                      // Make bounding boxes match the object sizes more precisely
-                      const width = Math.max(0, Math.min(1, bbox.width * 0.85)); // Reduce width by 15%
-                      const height = Math.max(0, Math.min(1, bbox.height * 0.85)); // Reduce height by 15%
-                      
-                      // Recenter the box so it's still centered on the same point
-                      const adjustedX = x + (bbox.width - width) / 2;
-                      const adjustedY = y + (bbox.height - height) / 2;
+                      // Using original width and height (100%)
+                      const width = Math.max(0, Math.min(1, bbox.width));
+                      const height = Math.max(0, Math.min(1, bbox.height));
                       
                       return (
                         <div
                           key={idx}
                           className="absolute"
                           style={{
-                            left: `${adjustedX * 100}%`,
-                            top: `${adjustedY * 100}%`,
+                            left: `${x * 100}%`,
+                            top: `${y * 100}%`,
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
-                            borderWidth: '2px',
+                            borderWidth: '1px',
                             borderStyle: 'solid',
                             borderColor: boundingBoxColor,
                           }}
