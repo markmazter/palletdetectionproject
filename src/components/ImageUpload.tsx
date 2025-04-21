@@ -80,7 +80,57 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
   };
 
-  // Remove resizing logic; use original file and preview URL
+  // Resize the image to 640x640 for optimal detection
+  const resizeImage = (file: File): Promise<{ resizedFile: File, previewUrl: string }> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        // Create a canvas with the desired dimensions
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        // Set dimensions to 640x640 for optimal object detection
+        canvas.width = 640;
+        canvas.height = 640;
+
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0, 640, 640);
+
+        // Get the data URL from the canvas
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Could not create blob'));
+              return;
+            }
+
+            // Create a new File instance
+            const resizedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+
+            // Create preview URL from the resized image
+            const previewUrl = URL.createObjectURL(blob);
+            resolve({ resizedFile, previewUrl });
+          },
+          'image/jpeg',
+          0.9
+        );
+      };
+
+      img.onerror = () => {
+        reject(new Error('Error loading image'));
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleFile = async (file: File) => {
     if (!file.type.match('image.*')) {
       toast({
@@ -92,15 +142,15 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
 
     try {
-      // Use the original file and createObjectURL for a preview
-      const previewUrl = URL.createObjectURL(file);
+      // Resize the image to 640x640 for optimal bounding box accuracy
+      const { resizedFile, previewUrl } = await resizeImage(file);
 
-      // Pass the original file and preview URL to the parent component
-      onImageSelect(file, previewUrl);
+      // Pass the resized file and preview URL to the parent component
+      onImageSelect(resizedFile, previewUrl);
 
       toast({
         title: "Image selected",
-        description: "Your image is ready for analysis using its original size.",
+        description: "Your image has been resized to 640x640 for optimal analysis.",
       });
     } catch (error) {
       console.error("Error handling image:", error);

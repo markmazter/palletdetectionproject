@@ -1,3 +1,4 @@
+
 interface PredictionResponse {
   predictions: {
     class: string;
@@ -50,6 +51,16 @@ export const analyzeImage = async (
     // Parse and return the response
     const data = await response.json();
     console.log('Roboflow API response:', data);
+    
+    // Ensure we use a standardized image size in the response
+    // This helps with consistent bounding box calculations
+    if (!data.image) {
+      data.image = {
+        width: 640,
+        height: 640
+      };
+    }
+    
     return data;
   } catch (error) {
     console.error('Error in analyzeImage:', error);
@@ -58,9 +69,9 @@ export const analyzeImage = async (
 };
 
 export const formatPredictions = (response: PredictionResponse) => {
-  // Extract image dimensions from response if available
-  const imageWidth = response.image?.width || 0;
-  const imageHeight = response.image?.height || 0;
+  // Use 640x640 as our standard size if no image dimensions are provided
+  const imageWidth = response.image?.width || 640;
+  const imageHeight = response.image?.height || 640;
   
   return response.predictions.map(pred => {
     // Check if bounding box coordinates are available
@@ -74,7 +85,6 @@ export const formatPredictions = (response: PredictionResponse) => {
     
     // Calculate normalized coordinates (0-1 range)
     // If image dimensions are available in the response, use them for normalization
-    // Otherwise, assume coordinates are already normalized
     let x = pred.x;
     let y = pred.y;
     let width = pred.width;
