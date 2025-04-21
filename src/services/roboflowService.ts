@@ -56,8 +56,8 @@ export const analyzeImage = async (
     // This helps with consistent bounding box calculations
     if (!data.image) {
       data.image = {
-        width: 640,
-        height: 640
+        width: 1280,
+        height: 1280
       };
     }
     
@@ -70,8 +70,8 @@ export const analyzeImage = async (
 
 export const formatPredictions = (response: PredictionResponse) => {
   // Use 640x640 as our standard size if no image dimensions are provided
-  const imageWidth = response.image?.width || 640;
-  const imageHeight = response.image?.height || 640;
+  const imageWidth = response.image?.width || 1280;
+  const imageHeight = response.image?.height || 1280;
   
   return response.predictions.map(pred => {
     // Check if bounding box coordinates are available
