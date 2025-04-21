@@ -38,7 +38,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
-      
+
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         const file = e.dataTransfer.files[0];
         handleFile(file);
@@ -59,13 +59,13 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
       // Fetch the sample image
       const response = await fetch(imagePath);
       const blob = await response.blob();
-      
+
       // Create a File object from the blob
       const file = new File([blob], `sample-${Date.now()}.jpg`, { type: 'image/jpeg' });
-      
+
       // Process the image just like an uploaded file
       handleFile(file);
-      
+
       toast({
         title: "Sample image selected",
         description: "Processing the selected sample image",
@@ -80,61 +80,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
   };
 
-  const resizeImage = (file: File): Promise<{ resizedFile: File; previewUrl: string }> => {
-    return new Promise((resolve, reject) => {
-      const imgElement = new window.Image();
-      const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        imgElement.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          // Set canvas dimensions to 640x640
-          canvas.width = 640;
-          canvas.height = 640;
-          
-          if (ctx) {
-            // Draw the image on the canvas, resizing it to 640x640
-            ctx.drawImage(imgElement, 0, 0, 640, 640);
-            
-            // Convert the canvas to a blob
-            canvas.toBlob((blob) => {
-              if (blob) {
-                // Create a new file from the blob
-                const resizedFile = new File([blob], file.name, {
-                  type: file.type,
-                  lastModified: Date.now()
-                });
-                
-                // Create a data URL for preview
-                const previewUrl = canvas.toDataURL(file.type);
-                
-                resolve({ resizedFile, previewUrl });
-              } else {
-                reject(new Error('Failed to create blob from canvas'));
-              }
-            }, file.type);
-          } else {
-            reject(new Error('Failed to get canvas context'));
-          }
-        };
-        
-        imgElement.onerror = () => {
-          reject(new Error('Failed to load image'));
-        };
-        
-        imgElement.src = e.target?.result as string;
-      };
-      
-      reader.onerror = () => {
-        reject(new Error('Failed to read file'));
-      };
-      
-      reader.readAsDataURL(file);
-    });
-  };
-
+  // Remove resizing logic; use original file and preview URL
   const handleFile = async (file: File) => {
     if (!file.type.match('image.*')) {
       toast({
@@ -146,21 +92,21 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
 
     try {
-      // Resize the image to 640x640
-      const { resizedFile, previewUrl } = await resizeImage(file);
-      
-      // Pass the resized file and preview URL to the parent component
-      onImageSelect(resizedFile, previewUrl);
-      
+      // Use the original file and createObjectURL for a preview
+      const previewUrl = URL.createObjectURL(file);
+
+      // Pass the original file and preview URL to the parent component
+      onImageSelect(file, previewUrl);
+
       toast({
-        title: "Image resized",
-        description: "Your image has been resized to 640x640 for optimal detection",
+        title: "Image selected",
+        description: "Your image is ready for analysis using its original size.",
       });
     } catch (error) {
-      console.error("Error resizing image:", error);
+      console.error("Error handling image:", error);
       toast({
         title: "Error processing image",
-        description: "Failed to resize your image. Please try again.",
+        description: "Failed to process your image. Please try again.",
         variant: "destructive"
       });
     }
@@ -193,7 +139,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
                 onChange={handleChange}
                 disabled={isProcessing}
               />
-              
+
               <div className="flex flex-col items-center justify-center space-y-3">
                 {isProcessing ? (
                   <>
@@ -215,7 +161,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
           </form>
 
           <div className="mt-4 flex justify-center">
-            <Button 
+            <Button
               disabled={isProcessing}
               onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
               className="flex items-center gap-2"
@@ -225,21 +171,21 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
             </Button>
           </div>
         </div>
-        
+
         {/* Sample Images Section */}
         <div>
           <h3 className="text-lg font-medium text-gray-700 mb-3">Try Sample Images</h3>
           <div className="grid grid-cols-1 gap-3">
             {sampleImages.map((image, index) => (
-              <div 
+              <div
                 key={index}
                 className="border rounded-lg p-2 flex items-center cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => !isProcessing && handleSampleImage(image.path)}
               >
                 <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  <img 
-                    src={image.path} 
-                    alt={image.description} 
+                  <img
+                    src={image.path}
+                    alt={image.description}
                     className="w-full h-full object-cover"
                   />
                 </div>
