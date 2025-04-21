@@ -1,3 +1,4 @@
+
 import { FC, useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -32,7 +33,7 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
   const [labelOpacity, setLabelOpacity] = useState(1);
   const [boundingBoxColor, setBoundingBoxColor] = useState('#ffff00');
 
-  const availableColors = ['#ff00e0', '#ff0000', '#ff8700', '#ffff00', '#00fcfc', '#7cfc00'];
+  const availableColors = ['#ffff00', '#ff0000', '#39ff14', '#f414ff', '#ff14aa', '#00fcfc'];
   
   // Always define hooks at the top level, never conditionally
   const filteredPredictions = useMemo(() => {
@@ -96,9 +97,9 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                       // Ensure bbox values are within 0-1 range
                       const x = Math.max(0, Math.min(1, bbox.x));
                       const y = Math.max(0, Math.min(1, bbox.y));
-                      // Make bounding boxes smaller by reducing width and height
-                      const width = Math.max(0, Math.min(1, bbox.width * 1)); // Reduce width by 0%
-                      const height = Math.max(0, Math.min(1, bbox.height * 1)); // Reduce height by 0%
+                      // Make bounding boxes match the object sizes more precisely
+                      const width = Math.max(0, Math.min(1, bbox.width * 0.85)); // Reduce width by 15%
+                      const height = Math.max(0, Math.min(1, bbox.height * 0.85)); // Reduce height by 15%
                       
                       // Recenter the box so it's still centered on the same point
                       const adjustedX = x + (bbox.width - width) / 2;
@@ -113,7 +114,8 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({
                             top: `${adjustedY * 100}%`,
                             width: `${width * 100}%`,
                             height: `${height * 100}%`,
-                            borderWidth: '1px',
+                            borderWidth: '2px',
+                            borderStyle: 'solid',
                             borderColor: boundingBoxColor,
                           }}
                         >
