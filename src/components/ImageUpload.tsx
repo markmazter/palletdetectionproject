@@ -1,4 +1,3 @@
-
 import { FC, useState, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -80,7 +79,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
   };
 
-  // Resize the image to 640x640 for optimal detection
+  // Resize the image to 1280x1280 for optimal detection
   const resizeImage = (file: File): Promise<{ resizedFile: File, previewUrl: string }> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -93,12 +92,12 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
           return;
         }
 
-        // Set dimensions to 640x640 for optimal object detection
-        canvas.width = 640;
-        canvas.height = 640;
+        // Set dimensions to 1280x1280 for optimal object detection
+        canvas.width = 1280;
+        canvas.height = 1280;
 
         // Draw the image on the canvas
-        ctx.drawImage(img, 0, 0, 640, 640);
+        ctx.drawImage(img, 0, 0, 1280, 1280);
 
         // Get the data URL from the canvas
         canvas.toBlob(
@@ -142,7 +141,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
     }
 
     try {
-      // Resize the image to 640x640 for optimal bounding box accuracy
+      // Resize the image to 1280x1280 for optimal bounding box accuracy
       const { resizedFile, previewUrl } = await resizeImage(file);
 
       // Pass the resized file and preview URL to the parent component
@@ -150,7 +149,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ onImageSelect, isProcessing }) => {
 
       toast({
         title: "Image selected",
-        description: "Your image has been resized to 640x640 for optimal analysis.",
+        description: "Your image has been resized to 1280x1280 for optimal analysis.",
       });
     } catch (error) {
       console.error("Error handling image:", error);
