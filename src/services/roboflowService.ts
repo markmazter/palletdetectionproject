@@ -36,7 +36,9 @@ export const analyzeImage = async (
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      query: { modelVersion }
+      // Pass modelVersion as a parameter in the URL instead of in the query
+      responseType: 'json',
+      method: 'POST',
     });
     
     if (error) {

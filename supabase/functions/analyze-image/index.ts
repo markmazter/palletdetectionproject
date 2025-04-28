@@ -17,7 +17,7 @@ serve(async (req) => {
   try {
     const API_KEY = Deno.env.get("ROBOFLOW_API_KEY");
     const MODEL_ID = Deno.env.get("ROBOFLOW_MODEL_ID");
-    const MODEL_VERSION = req.url.searchParams?.get("modelVersion") || "2";
+    const MODEL_VERSION = new URL(req.url).searchParams.get("modelVersion") || "2";
 
     // Make sure we have the required API credentials
     if (!API_KEY || !MODEL_ID) {
