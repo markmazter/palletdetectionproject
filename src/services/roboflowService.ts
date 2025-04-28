@@ -1,4 +1,6 @@
 
+import { supabase } from "@/integrations/supabase/client";
+
 interface PredictionResponse {
   predictions: {
     class: string;
@@ -17,43 +19,34 @@ interface PredictionResponse {
 
 export const analyzeImage = async (
   imageFile: File,
-  apiKey: string,
-  modelId: string = 'your-model-id',
-  modelVersion: string = 'your-model-version'
+  apiKey?: string, // No longer used directly
+  modelId?: string, // No longer used directly
+  modelVersion: string = '2'
 ): Promise<PredictionResponse> => {
   try {
-    console.log('Analyzing image with Roboflow API...', imageFile.name);
+    console.log('Analyzing image through Supabase Edge Function...', imageFile.name);
 
-    // Create form data to send to Roboflow
+    // Create form data to send to Edge Function
     const formData = new FormData();
     formData.append('file', imageFile);
     
-    // Check if API key is provided
-    if (!apiKey) {
-      console.error('No API key provided');
-      throw new Error('API key is required to analyze images');
+    // Call our secure Edge Function instead of directly calling Roboflow API
+    const { data, error } = await supabase.functions.invoke('analyze-image', {
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      query: { modelVersion }
+    });
+    
+    if (error) {
+      console.error('Edge Function error:', error);
+      throw new Error(`Failed to analyze image: ${error.message}`);
     }
     
-    // Make the actual API request to Roboflow
-    const response = await fetch(
-      `https://detect.roboflow.com/${modelId}/${modelVersion}?api_key=${apiKey}`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
-    
-    if (!response.ok) {
-      console.error('API response not OK:', response.status, response.statusText);
-      throw new Error(`Failed to analyze image: ${response.statusText}`);
-    }
-    
-    // Parse and return the response
-    const data = await response.json();
-    console.log('Roboflow API response:', data);
+    console.log('Edge Function response:', data);
     
     // Ensure we use a standardized image size in the response
-    // This helps with consistent bounding box calculations
     if (!data.image) {
       data.image = {
         width: 1280,
