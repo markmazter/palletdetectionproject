@@ -30,15 +30,6 @@ const HeroSection = () => {
           Learn more
           <ExternalLink className="h-4 w-4" />
         </Button>
-        <Button 
-          variant="outline" 
-          size="lg" 
-          className="flex items-center gap-2"
-          onClick={() => window.open('https://www.cevalogistics.com/en', '_blank')}
-        >
-          CEVA Logistics
-          <ExternalLink className="h-4 w-4" />
-        </Button>
       </div>
     </section>
   );
