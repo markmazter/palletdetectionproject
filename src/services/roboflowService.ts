@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 interface PredictionResponse {
@@ -31,13 +30,11 @@ export const analyzeImage = async (
     formData.append('file', imageFile);
     
     // Call our secure Edge Function instead of directly calling Roboflow API
-    const { data, error } = await supabase.functions.invoke('analyze-image', {
+    const { data, error } = await supabase.functions.invoke(`analyze-image?modelVersion=${modelVersion}`, {
       body: formData,
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      // Pass modelVersion as a parameter in the URL instead of in the query
-      responseType: 'json',
       method: 'POST',
     });
     
