@@ -25,32 +25,18 @@ export const analyzeImage = async (
 ): Promise<PredictionResponse> => {
   try {
     console.log('Analyzing image through Supabase Edge Function...', imageFile.name);
+
+    // Create form data to send to Edge Function
+    const formData = new FormData();
+    formData.append('file', imageFile);
     
-    // Convert image to base64 string instead of using FormData
-    const reader = new FileReader();
-    const imageBase64Promise = new Promise<string>((resolve, reject) => {
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        // Remove the data:image/jpeg;base64, prefix
-        const base64 = base64String.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = reject;
-    });
-    
-    reader.readAsDataURL(imageFile);
-    const imageBase64 = await imageBase64Promise;
-    
-    // Call our secure Edge Function with JSON data instead of FormData
-    const { data, error } = await supabase.functions.invoke(`analyze-image?modelVersion=${modelVersion}`, {
-      body: JSON.stringify({ 
-        imageBase64,
-        filename: imageFile.name
-      }),
+    // Call our secure Edge Function instead of directly calling Roboflow API
+    const { data, error } = await supabase.functions.invoke('analyze-image', {
+      body: formData,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
-      method: 'POST',
+      query: { modelVersion }
     });
     
     if (error) {

@@ -17,7 +17,7 @@ serve(async (req) => {
   try {
     const API_KEY = Deno.env.get("ROBOFLOW_API_KEY");
     const MODEL_ID = Deno.env.get("ROBOFLOW_MODEL_ID");
-    const MODEL_VERSION = new URL(req.url).searchParams.get("modelVersion") || "2";
+    const MODEL_VERSION = req.url.searchParams?.get("modelVersion") || "2";
 
     // Make sure we have the required API credentials
     if (!API_KEY || !MODEL_ID) {
@@ -27,52 +27,33 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Processing image with model version: ${MODEL_VERSION}`);
-    
-    // Get the base64 image data from the request
-    const { imageBase64, filename } = await req.json();
-    
-    if (!imageBase64) {
+    // Get the image data from the request
+    const formData = await req.formData();
+    const imageFile = formData.get("file");
+
+    if (!imageFile || !(imageFile instanceof File)) {
       return new Response(
-        JSON.stringify({ error: "No image data provided" }),
+        JSON.stringify({ error: "No image file provided" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Create FormData for Roboflow API
-    const formData = new FormData();
-    
-    // Convert base64 back to a Blob and append to FormData
-    const byteString = atob(imageBase64);
-    const mimeType = "image/jpeg"; // Default to JPEG
-    const ab = new Uint8Array(byteString.length);
-    
-    for (let i = 0; i < byteString.length; i++) {
-      ab[i] = byteString.charCodeAt(i);
-    }
-    
-    const blob = new Blob([ab], { type: mimeType });
-    formData.append("file", blob, filename || "image.jpg");
-    
-    console.log(`Sending request to Roboflow API for model ${MODEL_ID}/${MODEL_VERSION}`);
-    
     // Forward the request to Roboflow API
+    const roboflowFormData = new FormData();
+    roboflowFormData.append("file", imageFile);
+    
     const roboflowResponse = await fetch(
       `https://detect.roboflow.com/${MODEL_ID}/${MODEL_VERSION}?api_key=${API_KEY}`,
       {
         method: 'POST',
-        body: formData,
+        body: roboflowFormData,
       }
     );
 
     if (!roboflowResponse.ok) {
-      const errorText = await roboflowResponse.text();
-      console.error('Roboflow API error:', roboflowResponse.status, roboflowResponse.statusText, errorText);
+      console.error('Roboflow API error:', roboflowResponse.status, roboflowResponse.statusText);
       return new Response(
-        JSON.stringify({ 
-          error: `Roboflow API error: ${roboflowResponse.statusText}`,
-          details: errorText
-        }),
+        JSON.stringify({ error: `Roboflow API error: ${roboflowResponse.statusText}` }),
         { status: roboflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -92,7 +73,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in Edge Function:', error);
     return new Response(
-      JSON.stringify({ error: error.message, stack: error.stack }),
+      JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
