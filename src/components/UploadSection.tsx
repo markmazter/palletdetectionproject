@@ -7,7 +7,7 @@ import ExportOptions from './ExportOptions';
 import HistoryLog from './HistoryLog';
 import ModelVersionSelector from './ModelVersionSelector';
 import { analyzeImage, formatPredictions } from '@/services/roboflowService';
-import { MODEL_PRECISION } from '@/config/constants';
+import { API_KEY, MODEL_ID, MODEL_PRECISION } from '@/config/constants';
 import type { HistoryEntry } from '@/types/history';
 
 const UploadSection = () => {
@@ -26,8 +26,7 @@ const UploadSection = () => {
     
     try {
       setIsProcessing(true);
-      // No need to pass API_KEY or MODEL_ID anymore as they're securely stored in Supabase
-      const results = await analyzeImage(file, undefined, undefined, modelVersion);
+      const results = await analyzeImage(file, API_KEY, MODEL_ID, modelVersion);
       const formattedPredictions = formatPredictions(results);
       setPredictions(formattedPredictions);
       
