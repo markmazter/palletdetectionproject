@@ -1,6 +1,6 @@
 
 // Model configuration
-export const API_KEY = 'KO8dKRKesUU1PwKj3TXs';
+export const API_KEY = 'rf_0nJbhb0VL7bTPHnEdjEb8HyyE2F2';
 export const MODEL_ID = 'counting-pallets-b9xos';
 
 // Model version precision data
